@@ -4,6 +4,7 @@
 [![LightGBM](https://img.shields.io/badge/LightGBM-4.0%2B-green.svg)](https://lightgbm.readthedocs.io/)
 [![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-Ensemble-orange.svg)](https://scikit-learn.org/)
 [![Domain](https://img.shields.io/badge/Domain-Fraud%20Analytics-red.svg)](#)
+[![Tests](https://img.shields.io/badge/Tests-Pytest%20Passing-brightgreen.svg)](#)
 
 Repositori ini mengimplementasikan sistem deteksi penipuan klaim asuransi (*Automated Claims Fraud Detection*) pada lini asuransi kendaraan bermotor (*Auto Insurance*). Sistem ini dirancang untuk mendeteksi klaim mencurigakan (*suspicious claims*) dan memprioritaskannya ke unit investigasi khusus (*Special Investigation Unit / SIU*) guna menekan kerugian finansial akibat klaim fiktif.
 
@@ -26,12 +27,14 @@ $$\text{PR-AUC} = \int_0^1 P(R) \, dR$$
 ## 2. Struktur Repositori
 
 ```
-├── data/           # Dataset mentah & bersih (insurance_claims.csv)
-├── images/         # Grafik plot hasil render dari Jupyter (300 DPI)
-│   ├── fraud_risk_eda.png
-│   └── fraud_detection_roc_pr_curve.png
-├── notebook.ipynb  # Mesin pemrosesan: HANYA berisi impor, olah data, perhitungan statistik, dan pemodelan
-└── README.md       # Laporan utama: Pembahasan bisnis, rumus, tabel metrik, grafik tersemat, dan rekomendasi
+├── .gitignore          # Konfigurasi pengabaian cache Git
+├── data/               # Dataset mentah & bersih (insurance_claims.csv)
+├── images/             # Grafik plot hasil render dari Jupyter & SHAP (300 DPI)
+├── models/             # Binary model pipeline ter-serialize (fraud_detector.joblib)
+├── src/                # Modular Python inference engine (FraudDetector)
+├── tests/              # Automated unit tests (Pytest)
+├── notebook.ipynb      # Mesin pemrosesan: Impor, olah data, perhitungan statistik, dan pemodelan
+└── README.md           # Laporan utama: Pembahasan bisnis, rumus, tabel metrik, grafik tersemat, dan rekomendasi
 ```
 
 ---
@@ -65,7 +68,36 @@ Evaluasi performa model diuji pada data pengujian terisolasi (*holdout test set*
 
 ---
 
-## 5. Rekomendasi Bisnis & Operasional SIU
+## 5. Explainable AI: SHAP Fraud Risk Attributions
+
+Penyidik unit investigasi khusus (SIU) dapat mengaudit alasan suatu klaim diklasifikasikan sebagai berisiko tinggi melalui visualisasi atribusi SHAP:
+
+![SHAP Fraud Explainability](images/shap_fraud_explainability.png)
+
+---
+
+## 6. Implementasi Modular & Pengujian Otomatis
+
+Modul inferensi fraud tersedia di `src/fraud_detector.py`:
+
+```python
+from src.fraud_detector import FraudDetector
+import pandas as pd
+
+detector = FraudDetector()
+sample = pd.read_csv('data/insurance_claims.csv', nrows=1)
+fraud_prob = detector.predict_fraud_probability(sample)
+print(f"Probabilitas Risiko Fraud: {fraud_prob[0] * 100:.2f}%")
+```
+
+Jalankan automated test:
+```bash
+pytest tests/
+```
+
+---
+
+## 7. Rekomendasi Bisnis & Operasional SIU
 
 1. **Triase Investigasi Berbasis Ambang Probabilitas (Tiered SIU Routing)**:
    * **High Risk ($\hat{p} \ge 0.70$)**: Rujuk otomatis ke *Special Investigation Unit (SIU)* untuk pemeriksaan fisik dan audit lapangan mendalam.
@@ -78,7 +110,7 @@ Evaluasi performa model diuji pada data pengujian terisolasi (*holdout test set*
 
 ---
 
-## 6. Panduan Menjalankan
+## 8. Panduan Menjalankan
 
 1. **Pasang Dependensi**:
    ```bash
