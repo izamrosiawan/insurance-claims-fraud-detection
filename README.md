@@ -1,4 +1,4 @@
-# Auto Insurance Claims Fraud Detection & Anomaly Classification
+﻿# Auto Insurance Claims Fraud Detection & Anomaly Classification
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
 [![LightGBM](https://img.shields.io/badge/LightGBM-4.0%2B-green.svg)](https://lightgbm.readthedocs.io/)
@@ -124,3 +124,4 @@ pytest tests/
 
 ---
 *Proyek 03 dari Seri 5 Portofolio Data Science Industri Asuransi.*
+
